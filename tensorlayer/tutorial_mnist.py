@@ -1,8 +1,13 @@
 import tensorflow as tf
 import tensorlayer as tl
+from tensorlayer.layers import set_keep
+import numpy as np
+import time
 #prepare data
 sess = tf.InteractiveSession()
 X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,784))
+#for convolutional neural network, the data can be load by:
+#X_train, y_train, X_val, y_val, X_test, y_test = tl.files.load_mnist_dataset(shape=(-1,28,38,1))
 #define placeholder
 x = tf.placeholder(tf.float32, shape=[None, 784], name='x')
 y_ = tf.placeholder(tf.int64, shape=[None, ], name='y_')
