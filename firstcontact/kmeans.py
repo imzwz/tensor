@@ -28,13 +28,37 @@ expanded_centroides = tf.expand_dims(centroides, 1)
 #print(expanded_centroides.get_shape()) -> [4, 1, 2]
 
 assignments = tf.argmin(tf.reduce_sum(tf.square(tf.sub(expanded_vectors, expanded_centroides)), 2), 0)
-means = tf.concat(0, [tf.reduce_mean(tf.gather(vectors, tf.reshape(tf.where(tf.equal(assignments, c)), [1,-1])), reduction_indices = [1]) for c in range(k)])
+#print(tf.sub(expanded_vectors-expanded_centroides).get_shape()) -> [4, 2000, 2]
+#print(tf.square(tf.sub(expanded_vectors-expanded_centroides)).get_shape()) -> [4, 2000, 2]
+#print(tf.reduce_sum(..., 2).get_shape()) -> [4, 2000]
+#print(tf.argmin(..., 0).get_shape()) -> [2000]
+
+
+#means = tf.concat(0, [tf.reduce_mean(tf.gather(vectors, tf.reshape(tf.where(tf.equal(assignments, c)), [1,-1])), reduction_indices = [1]) for c in range(k)])
+#tf.equal(assignment,c) -> [2000], boolean values.
+#tf.where(...) -> 
+for c in range(k):
+    val1 = tf.equal(assignments, c)
+#    print(val1.get_shape())   #[2000] 
+    val2 = tf.where(val1)
+    print(tf.where(tf.equal(assignments,c)).get_shape())    #[?, 1] indicate the true value is.
+    val3 = tf.reshape(val2, [1,-1])
+    print(val3.get_shape())    #[1,?] reshape -1 means the rest.
+    val4 = tf.gather(vectors, val3)
+    print(val4.get_shape())    #[1, ?, 2] merge vectors's slice indicated by val3, means all the vector labeled by c
+    val5 = tf.reduce_mean(val4, 1)
+    print(val5.get_shape())   #[1,2] computed the average value of cluster c. 
+    if c == 0:
+        means = val5
+    else:
+        means = tf.concat(0, [means,val5])
 update_centroides = tf.assign(centroides, means)
 init_op = tf.initialize_all_variables()
 sess = tf.Session()
 sess.run(init_op)
 for step in range(100):
-    _, centroid_values, assignment_values = sess.run([update_centroides, centroides, assignments])
+    centroid_values, assignment_values = sess.run([update_centroides, assignments])
+    #_, centroid_values, assignment_values = sess.run([update_centroides, centroides, assignments])
 data = {"x": [], "y": [], "cluster": []}
 for i in range(len(assignment_values)):
     data["x"].append(conjunto_puntos[i][0])
