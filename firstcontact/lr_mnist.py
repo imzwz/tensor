@@ -23,22 +23,21 @@ optm = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost)
 pred = tf.equal(tf.argmax(actv, 1), tf.argmax(y, 1))
 accr = tf.reduce_mean(tf.cast(pred, "float"))
 
-init = tf.initialize_all_variables()
 
 training_epochs = 50
 batch_size = 100
 display_step = 5
 
 sess = tf.Session()
-sess.run(init)
+sess.run(tf.global_variables_initializer())
 
 for epoch in range(training_epochs):
     avg_cost = 0
     num_batch = int(mnist.train.num_examples/batch_size)
     for i in range(num_batch):
         batch_xs, batch_ys = mnist.train.next_batch(batch_size)
-        sess.run(optm, feed_dict={x: batch_xs, y: batch_ys})
         feeds = {x:batch_xs, y: batch_ys}
+        sess.run(optm, feed_dict=feeds)
         avg_cost += sess.run(cost, feed_dict=feeds)/num_batch
     
     if epoch % display_step == 0:
