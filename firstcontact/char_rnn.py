@@ -131,4 +131,4 @@ for epoch in range(num_epochs):
         if total_iter % save_every == 0:
             ckpt_path = os.path.join(save_dir, 'model.ckpt')
             saver.save(sess, ckpt_path, global_step=total_iter)
-            
+
