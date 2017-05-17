@@ -68,5 +68,5 @@ if TRAIN_FLAG:
         if epoch % disp_step == 0:
             print("display")
 
-            
+
 
